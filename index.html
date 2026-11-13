@@ -300,7 +300,6 @@
       font-weight: 700;
       line-height: 1.35;
     }
-    .phone.is-cover .fine { color: var(--faint); }
     .explain {
       margin-top: 14px;
       background: var(--card);
@@ -869,9 +868,6 @@
       copy.append(el("div", "han cover-han", "食咗未"));
       copy.append(el("div", "cover-en", "Sik Jo Mei"));
       copy.append(el("p", "cover-tag", zh ? "幫旅客像本地人一樣吃香港" : "Help visitors eat Hong Kong the way locals do."));
-      copy.append(el("p", "fine", zh
-        ? "可點擊樣本。這些茶餐廳不是合作店，模型亦未上線。"
-        : "Clickable sample. These cafes are not real partners, and the model is not live."));
       cover.append(lang, hero, copy);
       screenEl.append(cover);
       dockEl.className = "dock";
