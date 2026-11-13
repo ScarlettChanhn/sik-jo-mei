@@ -1,0 +1,11 @@
+{
+  "name": "sik-jo-mei",
+  "private": true,
+  "description": "Clickable prototype for Sik Jo Mei, a Hong Kong food guide.",
+  "scripts": {
+    "dev": "serve . --listen tcp://0.0.0.0:${PORT:-3000} --no-clipboard"
+  },
+  "dependencies": {
+    "serve": "14.2.5"
+  }
+}

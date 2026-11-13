@@ -1,0 +1,31 @@
+#!/bin/bash
+set -euo pipefail
+
+cd "$(dirname "$0")/../.."
+
+if [ -f .figma/make/env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . .figma/make/env
+  set +a
+fi
+
+PORT="${PORT:-3000}"
+HEALTHCHECK_ENDPOINT="${FIGMA_MAKE_URL:-http://127.0.0.1:${PORT}}/"
+MAX_WAIT=120
+INTERVAL=2
+ELAPSED=0
+
+echo "Waiting for development server at ${HEALTHCHECK_ENDPOINT}"
+
+while [ "$ELAPSED" -lt "$MAX_WAIT" ]; do
+  if curl -sf "$HEALTHCHECK_ENDPOINT" >/dev/null 2>&1; then
+    echo "Dev server is up"
+    exit 0
+  fi
+  sleep "$INTERVAL"
+  ELAPSED=$((ELAPSED + INTERVAL))
+done
+
+echo "Error: Dev server did not start within ${MAX_WAIT}s" >&2
+exit 1

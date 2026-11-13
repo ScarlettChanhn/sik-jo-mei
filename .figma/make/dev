@@ -1,0 +1,15 @@
+#!/bin/bash
+set -euo pipefail
+
+cd "$(dirname "$0")/../.."
+
+if [ -f .figma/make/env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . .figma/make/env
+  set +a
+fi
+
+PORT="${PORT:-3000}"
+echo "Starting development server on port ${PORT}"
+exec npx --no-install serve . --listen "tcp://0.0.0.0:${PORT}" --no-clipboard

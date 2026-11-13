@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+
+cd "$(dirname "$0")/../.."
+
+echo "Running npm install"
+npm install
+echo "Dependencies installed"

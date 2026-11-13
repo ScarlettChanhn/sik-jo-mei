@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sik Jo Mei — prototype</title>
+  <style>
+    :root {
+      --ink: #1c1c1c;
+      --muted: #6a6c6c;
+      --faint: #8d8f8e;
+      --line: #eadfD0;
+      --paper: #e4d0bb;
+      --phone: #f8f1e7;
+      --card: #fffdf9;
+      --jade: #0c6b62;
+      --jade-deep: #1c1c1c;
+      --jade-soft: #f3e7d8;
+      --sun: #1c1c1c;
+      --sun-deep: #1c1c1c;
+      --cream: #f3e6d6;
+      --land: #efe0cc;
+      --block: #fbf6ee;
+      --water: #b7cfcb;
+      --park: #d5e4d4;
+      --fresh: #1c1c1c;
+      --fresh-bg: #f3e7d8;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Avenir Next", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "WenQuanYi Micro Hei", "Microsoft YaHei", sans-serif;
+    }
+
+    button, input, textarea { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible { outline: 2px solid var(--jade); outline-offset: 2px; }
+    h1, h2, p { margin: 0; }
+
+    .stage {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      padding: 28px 20px;
+    }
+
+    .phone {
+      width: 390px;
+      height: 780px;
+      max-height: calc(100vh - 40px);
+      background: var(--phone);
+      border: 1px solid #c5d0d6;
+      border-radius: 28px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex: none;
+    }
+
+    .screen {
+      flex: 1;
+      overflow: auto;
+      padding: 18px 16px 8px;
+    }
+
+    .dock {
+      padding: 10px 16px 16px;
+      background: var(--phone);
+    }
+    .dock.has-rule { border-top: 1px solid var(--line); }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      object-fit: cover;
+      display: block;
+    }
+    .hero, .dish {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+    }
+    .hero { height: 156px; border-radius: 16px; margin: 0 0 12px; }
+    .dish { height: 148px; border-radius: 14px; margin-top: 12px; }
+    .live {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--fresh);
+      background: var(--fresh-bg);
+      border-radius: 999px;
+      padding: 4px 8px;
+    }
+
+    .city {
+      position: relative;
+      height: 228px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: var(--land);
+    }
+    .road { position: absolute; background: #fbf6ee; }
+    .road-h { left: 0; right: 0; top: 86px; height: 16px; }
+    .road-v { top: 0; bottom: 46px; left: 168px; width: 16px; }
+    .park { position: absolute; left: 196px; top: 112px; width: 72px; height: 58px; background: var(--park); border-radius: 8px; }
+    .water { position: absolute; left: 0; right: 0; bottom: 0; height: 42px; background: var(--water); }
+    .water-label, .road-label {
+      position: absolute;
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #315864;
+    }
+    .water-label { left: 12px; bottom: 12px; color: #3d5552; }
+    .road-label { right: 14px; top: 89px; color: #5d7a78; }
+    .block {
+      position: absolute;
+      background: var(--block);
+      border-radius: 7px;
+    }
+    .b1 { left: 12px; top: 12px; width: 70px; height: 62px; }
+    .b2 { left: 90px; top: 14px; width: 66px; height: 58px; }
+    .b3 { left: 196px; top: 14px; width: 128px; height: 58px; }
+    .b4 { left: 12px; top: 114px; width: 144px; height: 58px; }
+    .b5 { left: 278px; top: 114px; width: 52px; height: 58px; }
+
+    .pin, .you {
+      position: absolute;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      text-align: center;
+    }
+    .pin { transform: translate(-50%, -100%); }
+    .pin i, .you i {
+      display: block;
+      width: 14px;
+      height: 14px;
+      margin: 0 auto;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      background: #1c1c1c;
+      box-shadow: 0 0 0 4px rgba(28, 28, 28, 0.12);
+    }
+    .pin span, .you span {
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      font-weight: 750;
+      background: var(--card);
+      border-radius: 999px;
+      padding: 2px 6px;
+    }
+    .pin.on i { background: var(--sun-deep); }
+    .you { transform: translate(-50%, -50%); }
+    .you i {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      transform: none;
+      background: #1c1c1c;
+      box-shadow: 0 0 0 5px rgba(28, 28, 28, 0.12);
+    }
+    .p-wing { left: 46px; top: 58px; }
+    .p-shun { left: 250px; top: 50px; }
+    .p-you { left: 300px; top: 150px; }
+
+    .sheet-title {
+      margin: 14px 2px 0;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+    }
+    .sub { margin-top: 4px; color: var(--muted); font-size: 14px; line-height: 1.4; }
+
+    .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 12px 0; }
+    .chip {
+      border: 1px solid var(--line);
+      background: var(--jade-soft);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 750;
+      text-align: center;
+    }
+
+    .list { display: flex; flex-direction: column; gap: 8px; }
+    .shop {
+      width: 100%;
+      text-align: left;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 52px 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+    .shop:hover { border-color: #9dccc6; }
+    .glyph {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--cream);
+    }
+    .glyph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .shop-name { font-size: 16px; font-weight: 750; }
+    .shop-meta { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .q { text-align: right; color: var(--sun-deep); }
+    .q b { display: block; font-size: 20px; letter-spacing: -0.03em; }
+    .q span { color: var(--faint); font-size: 11px; font-weight: 650; }
+    .fine { margin: 10px 2px 0; color: var(--faint); font-size: 12px; line-height: 1.4; }
+    .phone.is-cover,
+    .phone.is-cover .screen,
+    .phone.is-cover .dock { background: #f8f1e7; }
+    .phone.is-cover .screen { padding: 0; }
+    .phone.is-cover .dock { border-top: 0; }
+    .phone.is-cover .dock.has-rule { border-top: 0; }
+    .cover { position: relative; display: block; }
+    .lang {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      height: 32px;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255, 248, 240, 0.94);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 750;
+      box-shadow: 0 4px 12px rgba(42, 28, 16, 0.16);
+    }
+    .cover-hero {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      grid-template-rows: 148px 148px;
+      gap: 4px;
+    }
+    .cover-hero img { width: 100%; height: 148px; object-fit: cover; display: block; }
+    .cover-hero img.tall { grid-row: 1 / span 2; height: 300px; }
+    .cover-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0 22px;
+    }
+    .cover-mark {
+      width: 88px;
+      height: 88px;
+      margin-top: -44px;
+      border: 4px solid #f8f1e7;
+      border-radius: 24px;
+      object-fit: cover;
+      box-shadow: 0 10px 22px rgba(72, 42, 16, 0.2);
+    }
+    .cover-han {
+      margin-top: 10px;
+      font-size: 46px;
+      letter-spacing: 0.08em;
+      line-height: 1;
+    }
+    .cover-en {
+      margin-top: 8px;
+      color: var(--jade-deep);
+      font-size: 13px;
+      font-weight: 750;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .cover-tag {
+      margin-top: 12px;
+      max-width: 280px;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+    .phone.is-cover .fine { color: var(--faint); }
+    .explain {
+      margin-top: 14px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .explain img { width: 100%; height: 210px; object-fit: cover; object-position: center; display: block; }
+    .explain p { margin: 0; padding: 8px 12px 10px; color: var(--muted); font-size: 13px; line-height: 1.35; }
+    .panel {
+      margin-top: 12px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+    .section-label {
+      margin-top: 16px;
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+    .line {
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      gap: 10px;
+      align-items: baseline;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .line .han { font-size: 16px; }
+    .line span { color: var(--muted); font-size: 14px; line-height: 1.35; }
+    .meta-row { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+    .meta-row b { font-weight: 650; }
+    .meta-row span { color: var(--muted); text-align: right; }
+    .tile {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: #1c1c1c;
+      color: #fefefe;
+      display: grid;
+      place-items: center;
+      font-weight: 750;
+    }
+    .ticket + .ticket { margin-top: 8px; }
+    .message {
+      margin-top: 14px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 4px 16px 16px 16px;
+      padding: 14px;
+    }
+    .message .who { color: var(--ink); font-size: 12px; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+    .message p { margin-top: 6px; font-size: 15px; line-height: 1.45; }
+    .share-hero {
+      margin-top: 12px;
+      background: #1c1c1c;
+      color: #fefefe;
+      border-radius: 18px;
+      padding: 18px 16px;
+    }
+    .share-hero .for { font-size: 12px; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase; }
+    .share-hero .url { margin-top: 8px; font-size: 18px; font-weight: 750; line-height: 1.35; word-break: break-all; }
+    .name-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .name-pills span {
+      background: var(--jade-soft);
+      color: var(--jade-deep);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .friends { display: flex; gap: 8px; margin-top: 12px; }
+    .friend {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border: 1px solid var(--line);
+      background: var(--card);
+      border-radius: 14px;
+      padding: 8px 6px 10px;
+    }
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+    }
+    .friend b { display: block; margin-top: 6px; font-size: 14px; }
+    .friend span { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 1.3; }
+    .friend[aria-pressed="true"] { border-color: #1c1c1c; background: var(--jade-soft); }
+    .friend[aria-pressed="true"] .avatar { box-shadow: 0 0 0 2px #1c1c1c; }
+    .share-preview {
+      margin-top: 12px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .share-preview-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+    }
+    .share-preview-top b { display: block; font-size: 14px; }
+    .share-preview-top span { display: block; margin-top: 1px; color: var(--muted); font-size: 12px; }
+    .thumbs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; }
+    .thumbs img { width: 100%; height: 78px; object-fit: cover; display: block; }
+    .message-who { display: flex; align-items: center; gap: 8px; }
+    .message-who img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+    .reply { display: flex; gap: 10px; align-items: flex-start; }
+    .reply .avatar { width: 36px; height: 36px; flex: none; }
+    .channels button { display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .chan-icon { display: flex; }
+    .note-box {
+      width: 100%;
+      margin-top: 12px;
+      min-height: 104px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--card);
+      padding: 12px;
+      line-height: 1.4;
+    }
+    .channels { display: flex; gap: 8px; margin-top: 10px; }
+    .channels button {
+      flex: 1;
+      height: 40px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      font-size: 14px;
+      font-weight: 750;
+    }
+    .channels button[aria-pressed="true"] { background: #1c1c1c; color: #fefefe; border-color: #1c1c1c; }
+    .link-row {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 8px 8px 8px 12px;
+    }
+    .link-row code { flex: 1; font-family: inherit; font-size: 13px; line-height: 1.35; word-break: break-all; }
+    .link-row button {
+      flex: none;
+      height: 36px;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 10px;
+      background: #1c1c1c;
+      color: #fefefe;
+      font-size: 13px;
+      font-weight: 750;
+    }
+    button.ticket { width: 100%; text-align: left; cursor: pointer; }
+    button.ticket.on { border-color: #1c1c1c; background: #f3e6d6; }
+    .reply {
+      margin-top: 12px;
+      background: var(--cream);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+    .reply b { display: block; color: var(--sun-deep); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .reply p { margin-top: 4px; font-size: 15px; line-height: 1.4; }
+    button.primary:disabled { opacity: 0.45; }
+
+    .back {
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font-weight: 750;
+      font-size: 14px;
+      padding: 0 0 10px;
+    }
+    .kicker {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .place { margin-top: 4px; font-size: 28px; letter-spacing: -0.03em; line-height: 1.1; }
+
+    .queue-card {
+      margin-top: 16px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px 16px 14px;
+    }
+    .queue-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+    .minutes { font-size: 64px; line-height: 0.85; letter-spacing: -0.05em; font-weight: 750; color: var(--sun-deep); }
+    .minutes small { display: block; margin-top: 6px; font-size: 14px; letter-spacing: 0; color: var(--muted); font-weight: 650; }
+    .fresh {
+      text-align: right;
+      color: var(--fresh);
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+    .facts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+    .fact {
+      background: var(--jade-soft);
+      color: var(--jade-deep);
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .note { margin-top: 12px; color: var(--muted); font-size: 14px; line-height: 1.45; }
+    .aim {
+      margin-top: 14px;
+      background: var(--cream);
+      border: 1px dashed #f0c2a8;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+    }
+    .aim .han { font-size: 28px; letter-spacing: 0.14em; }
+    .aim p { margin-top: 6px; color: var(--muted); font-size: 13px; }
+    .steps-use { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .steps-use div {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .steps-use i {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--jade-soft);
+      color: var(--jade-deep);
+      font-style: normal;
+      font-size: 12px;
+      font-weight: 750;
+      display: grid;
+      place-items: center;
+    }
+
+    .slip {
+      margin-top: 14px;
+      background: var(--cream);
+      border: 1px solid #f3d3c0;
+      border-radius: 14px;
+      padding: 22px 12px 16px;
+      text-align: center;
+    }
+    .han {
+      font-family: "Songti SC", "STSong", "Noto Serif CJK SC", "SimSun", "WenQuanYi Micro Hei", serif;
+      font-weight: 700;
+    }
+    .slip .han { font-size: 42px; letter-spacing: 0.12em; }
+    .slip .label { margin-top: 6px; color: var(--faint); font-size: 12px; }
+
+    .rows { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .row {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+    .row b { display: block; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); font-weight: 750; }
+    .row span { display: block; margin-top: 2px; font-size: 16px; font-weight: 700; }
+
+    .pass {
+      margin-top: 6px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .pass-top {
+      background: var(--jade);
+      color: #f3fffd;
+      padding: 14px 18px 16px;
+    }
+    .pass-top .for {
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .pass-top .han { margin-top: 10px; font-size: 34px; line-height: 1.25; letter-spacing: 0.04em; }
+    .pass-body { padding: 14px 18px 16px; }
+    .pass-body .en { font-size: 18px; font-weight: 750; }
+    .pass-body .confirm { margin-top: 6px; color: var(--muted); font-size: 14px; line-height: 1.4; }
+    .perf {
+      height: 0;
+      border-top: 1px dashed #d5e4e1;
+    }
+
+    .saved-head { display: block; }
+    .saved-kicker { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .list-title { font-size: 26px; }
+    .saved-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--fresh-bg);
+      color: var(--fresh);
+      display: grid;
+      place-items: center;
+      flex: none;
+    }
+    .ticket {
+      margin-top: 14px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+    .linkbox {
+      margin-top: 10px;
+      background: var(--jade-soft);
+      border: 1px solid #c5e4df;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      word-break: break-all;
+    }
+    .linkbox b {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--fresh);
+      margin-bottom: 4px;
+    }
+
+    button.primary, button.ghost {
+      width: 100%;
+      height: 48px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 750;
+    }
+    button.primary { background: #1c1c1c; color: #fefefe; border: 0; }
+    button.primary:hover { background: #000; }
+    button.ghost {
+      margin-top: 8px;
+      background: transparent;
+      border: 1px solid var(--line);
+    }
+
+    .rail { width: 300px; flex: none; }
+    .rail h2 { font-size: 18px; margin-bottom: 6px; }
+    .rail .lead { color: var(--muted); font-size: 14px; line-height: 1.45; margin-bottom: 14px; }
+    .steps { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+    .steps button {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+    .steps button strong { display: block; font-size: 14px; }
+    .steps button span { display: block; color: var(--muted); font-size: 13px; line-height: 1.35; margin-top: 2px; }
+    .steps button[aria-current="step"] { background: var(--card); border-color: var(--line); }
+    .rail .tools { display: flex; gap: 8px; margin-top: 16px; }
+    .rail .tools button {
+      font-size: 13px;
+      font-weight: 750;
+      border-radius: 999px;
+      padding: 7px 12px;
+      border: 1px solid #c5d0d6;
+      background: var(--card);
+    }
+
+    body.cues-off .rail { display: none; }
+    body.frame { background: var(--phone); }
+    body.frame .stage { padding: 0; min-height: 100vh; }
+    body.frame .phone { width: 100vw; height: 100vh; max-height: none; border: 0; border-radius: 0; }
+    body.frame .rail { display: none; }
+
+    @media (max-width: 820px) {
+      .stage { flex-direction: column; }
+      .phone { width: min(390px, 100%); height: 740px; }
+      .rail { width: min(390px, 100%); }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone">
+      <div class="screen" id="screen"></div>
+      <div class="dock" id="dock"></div>
+    </div>
+    <aside class="rail">
+      <h2>75-second demo</h2>
+      <p class="lead">Start on the cover, then tap the phone in this order. One short line at each step, then hand off to D. There is no paywall.</p>
+      <ol class="steps" id="steps"></ol>
+      <div class="tools">
+        <button type="button" id="hide-cues">Hide cues</button>
+        <button type="button" id="restart">Start again</button>
+      </div>
+    </aside>
+  </div>
+  <script>
+    const shops = {
+      wing: {
+        name: "Wing Kee Cafe",
+        short: "Wing Kee",
+        kind: "Cha chaan teng",
+        walk: "4 min walk",
+        photo: "images/cafe.jpg",
+        address: "18 South Wall Road",
+        hours: "7:00–18:00",
+        queue: "15",
+        updated: "Updated 8 minutes ago",
+        fresh: "Fresh · 8 min ago"
+      },
+      shun: {
+        name: "Shun Hing Cafe",
+        short: "Shun Hing",
+        kind: "Cha chaan teng",
+        walk: "6 min walk",
+        photo: "images/bun.jpg",
+        address: "6 Park Lane",
+        hours: "7:30–17:30",
+        queue: "22",
+        updated: "Updated 11 minutes ago",
+        fresh: "11 min ago"
+      }
+    };
+
+    const steps = [
+      { id: "cover", title: "Cover", line: "食咗未. Open the map when you are ready." },
+      { id: "map", title: "1 · Map", line: "Kowloon City. Cha chaan teng, not a chain." },
+      { id: "shop", title: "2 · Queue", line: "About fifteen minutes, updated eight minutes ago." },
+      { id: "menu", title: "3 · Menu", line: "Not a word-for-word translation." },
+      { id: "card", title: "4 · Order card", line: "Turn it to the waiter." },
+      { id: "list", title: "5 · List", line: "Add it. Share. How it makes money is D." }
+    ];
+
+    const params = new URLSearchParams(location.search);
+    const state = {
+      screen: "cover",
+      shopId: "wing",
+      shared: false,
+      cues: params.get("cues") !== "0",
+      frame: params.get("frame") === "1",
+      lang: params.get("lang") === "zh" ? "zh" : "en",
+      share: {
+        picked: { maya: true },
+        note: "Start at Wing Kee. The queue is about 15 minutes. Show the card: black coffee, no sugar, no milk.",
+        channel: "whatsapp",
+        copied: false,
+        sent: false,
+        going: ""
+      }
+    };
+    const people = [
+      { id: "maya", name: "Maya", when: "Arrives tomorrow", photo: "images/maya.jpg" },
+      { id: "alex", name: "Alex", when: "Lands tonight", photo: "images/alex.jpg" },
+      { id: "sam", name: "Sam", when: "In Kowloon", photo: "images/sam.jpg" }
+    ];
+    const listPhotos = [
+      ["images/cafe.jpg", "Wing Kee Cafe"],
+      ["images/bun.jpg", "Pineapple bun"],
+      ["images/milktea.jpg", "Milk tea"]
+    ];
+    const shareLink = "sikjomei.example/breakfast";
+
+    const screenEl = document.getElementById("screen");
+    const dockEl = document.getElementById("dock");
+    const stepsEl = document.getElementById("steps");
+
+    function go(screen, shopId) {
+      state.screen = screen;
+      if (shopId) state.shopId = shopId;
+      if (screen !== "list") state.shared = false;
+      const url = new URL(location.href);
+      url.searchParams.set("screen", screen);
+      history.replaceState(null, "", url);
+      render();
+    }
+
+    function shop() { return shops[state.shopId]; }
+
+    function el(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text != null) node.textContent = text;
+      return node;
+    }
+
+    function primary(label, onclick) {
+      const button = el("button", "primary", label);
+      button.type = "button";
+      button.addEventListener("click", onclick);
+      return button;
+    }
+
+    function backButton(target) {
+      const button = el("button", "back", "Back");
+      button.type = "button";
+      button.addEventListener("click", () => go(target));
+      return button;
+    }
+
+    function section(title, pairs) {
+      const wrap = document.createElement("div");
+      wrap.append(el("div", "section-label", title));
+      pairs.forEach(function (pair) {
+        const line = el("div", "line");
+        line.append(el("div", "han", pair[0]), el("span", "", pair[1]));
+        wrap.append(line);
+      });
+      return wrap;
+    }
+
+    function meta(label, value) {
+      const row = el("div", "meta-row");
+      row.append(el("b", "", label), el("span", "", value));
+      return row;
+    }
+
+    function picture(src, className, alt) {
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = alt;
+      if (className) img.className = className;
+      return img;
+    }
+
+    function renderCover() {
+      const zh = state.lang === "zh";
+      document.documentElement.lang = zh ? "zh-Hant" : "en";
+      screenEl.innerHTML = "";
+      const cover = el("div", "cover");
+      const lang = el("button", "lang", zh ? "EN" : "中文");
+      lang.type = "button";
+      lang.setAttribute("aria-label", zh ? "Switch to English" : "切換到中文");
+      lang.addEventListener("click", () => {
+        state.lang = zh ? "en" : "zh";
+        render();
+      });
+      const hero = el("div", "cover-hero");
+      [
+        ["images/cafe.jpg", zh ? "茶餐廳" : "A local cafe", "tall"],
+        ["images/bun.jpg", zh ? "菠蘿油" : "Pineapple bun", ""],
+        ["images/milktea.jpg", zh ? "奶茶" : "Milk tea", ""]
+      ].forEach(([src, alt, className]) => hero.append(picture(src, className, alt)));
+      const copy = el("div", "cover-copy");
+      copy.append(picture("images/logo.jpg", "cover-mark", zh ? "食咗未標誌" : "Sik Jo Mei logo"));
+      copy.append(el("div", "han cover-han", "食咗未"));
+      copy.append(el("div", "cover-en", "Sik Jo Mei"));
+      copy.append(el("p", "cover-tag", zh ? "幫旅客像本地人一樣吃香港" : "Help visitors eat Hong Kong the way locals do."));
+      copy.append(el("p", "fine", zh
+        ? "可點擊樣本。這些茶餐廳不是合作店，模型亦未上線。"
+        : "Clickable sample. These cafes are not real partners, and the model is not live."));
+      cover.append(lang, hero, copy);
+      screenEl.append(cover);
+      dockEl.className = "dock";
+      dockEl.innerHTML = "";
+      dockEl.append(primary(zh ? "打開地圖" : "Open the map", () => go("map", "wing")));
+    }
+
+    function renderMap() {
+      screenEl.innerHTML = "";
+      const top = el("div", "top");
+      const brand = el("div", "brand");
+      brand.append(picture("images/logo.jpg", "logo", "Sik Jo Mei logo"), document.createTextNode("Sik Jo Mei"));
+      top.append(brand, el("span", "live", "Open now"));
+      screenEl.append(top);
+
+      const city = el("div", "city");
+      city.append(el("div", "road road-h"), el("div", "road road-v"), el("div", "park"), el("div", "water"));
+      city.append(el("div", "road-label", "South Wall Rd"), el("div", "water-label", "Harbor"));
+      ["b1", "b2", "b3", "b4", "b5"].forEach((name) => city.append(el("div", "block " + name)));
+      const wing = el("button", "pin p-wing on");
+      wing.type = "button";
+      wing.innerHTML = "<i></i><span>Wing Kee</span>";
+      wing.addEventListener("click", () => go("shop", "wing"));
+      const shun = el("button", "pin p-shun");
+      shun.type = "button";
+      shun.innerHTML = "<i></i><span>Shun Hing</span>";
+      shun.addEventListener("click", () => go("shop", "shun"));
+      const you = el("div", "you p-you");
+      you.innerHTML = "<i></i><span>You</span>";
+      city.append(wing, shun, you);
+      screenEl.append(city);
+
+      screenEl.append(el("h1", "sheet-title", "Kowloon City"));
+      screenEl.append(el("p", "sub", "Eat Hong Kong the way locals do. Chains are hidden."));
+      const chips = el("div", "chips");
+      ["Cha chaan teng", "Not a chain", "Open now", "10-min walk"].forEach((label) => {
+        chips.append(el("span", "chip", label));
+      });
+      screenEl.append(chips);
+
+      const list = el("div", "list");
+      ["wing", "shun"].forEach((id) => {
+        const item = shops[id];
+        const button = el("button", "shop");
+        button.type = "button";
+        button.innerHTML = '<div class="glyph"></div><div><div class="shop-name"></div><div class="shop-meta"></div></div><div class="q"><b></b><span>min queue</span></div>';
+        button.querySelector(".glyph").append(picture(item.photo, "", item.name));
+        button.querySelector(".shop-name").textContent = item.name;
+        button.querySelector(".shop-meta").textContent = item.kind + " · " + item.walk;
+        button.querySelector(".q b").textContent = item.queue;
+        button.addEventListener("click", () => go("shop", id));
+        list.append(button);
+      });
+      screenEl.append(list);
+      const panel = el("div", "panel");
+      panel.append(el("div", "kicker", "On this walk"));
+      panel.append(meta("Cafes", "2 local, not chains"));
+      panel.append(meta("Queues", "Staff and recent visitors"));
+      panel.append(meta("Menus", "Handwritten lines become an order card"));
+      screenEl.append(panel);
+      screenEl.append(el("p", "fine", "Sample shops, not real partners. The menu scan is a prepared example. The model is not live."));
+      dockEl.className = "dock";
+      dockEl.innerHTML = "";
+    }
+
+    function renderShop() {
+      const item = shop();
+      screenEl.innerHTML = "";
+      screenEl.append(backButton("map"));
+      screenEl.append(picture(item.photo, "hero", item.name));
+      screenEl.append(el("div", "kicker", "Kowloon City · " + item.walk));
+      screenEl.append(el("h1", "place", item.name));
+      const card = el("div", "queue-card");
+      const row = el("div", "queue-row");
+      const minutes = el("div", "minutes", item.queue);
+      const unit = el("small", "", "minutes");
+      minutes.append(unit);
+      const fresh = el("div", "fresh", item.fresh);
+      row.append(minutes, fresh);
+      const facts = el("div", "facts");
+      [item.kind, "Not a chain", "Open now"].forEach((label) => facts.append(el("span", "fact", label)));
+      card.append(row, facts);
+      screenEl.append(card);
+      screenEl.append(el("p", "note", item.updated + ". Staff update this, and so do people who just arrived. If the number is old, we show that."));
+      const aim = el("div", "aim");
+      aim.innerHTML = '<div class="han">飛沙走奶</div>';
+      aim.append(el("p", "", "Point the camera at one handwritten line."));
+      screenEl.append(aim);
+      const details = el("div", "panel");
+      details.append(meta("Address", item.address));
+      details.append(meta("Hours", item.hours + " · sample"));
+      screenEl.append(details);
+      screenEl.append(el("p", "note", "Afternoon tea and the cold-drink price are not entered for this shop. Ask the waiter."));
+      screenEl.append(section("People here also order", [
+        ["菠蘿油", "Pineapple bun with butter"],
+        ["凍檸茶", "Iced lemon tea"],
+        ["絲襪奶茶", "Milk tea, pulled through a cloth bag"]
+      ]));
+      dockEl.className = "dock has-rule";
+      dockEl.innerHTML = "";
+      dockEl.append(primary("Scan the menu", () => {
+        state.screen = "reading";
+        render();
+        window.setTimeout(() => {
+          if (state.screen === "reading") go("menu");
+        }, 700);
+      }));
+    }
+
+    function renderReading() {
+      screenEl.innerHTML = "";
+      screenEl.append(el("div", "kicker", shop().name));
+      screenEl.append(el("h1", "place", "Reading the handwritten line"));
+      const slip = el("div", "slip");
+      slip.innerHTML = '<div class="han">飛沙走奶</div><div class="label">Prepared example · a live model is not running</div>';
+      screenEl.append(slip);
+      dockEl.className = "dock";
+      dockEl.innerHTML = "";
+    }
+
+    function renderMenu() {
+      const item = shop();
+      screenEl.innerHTML = "";
+      screenEl.append(backButton("shop"));
+      screenEl.append(el("div", "kicker", item.name));
+      screenEl.append(el("h1", "place", "What the line means"));
+      const slip = el("div", "slip");
+      slip.innerHTML = '<div class="han">飛沙走奶</div><div class="label">Characters on the menu</div>';
+      screenEl.append(slip);
+      screenEl.append(picture("images/coffee.jpg", "dish", "Black coffee, no sugar, no milk"));
+      const rows = el("div", "rows");
+      [
+        ["Means", "No sugar, no milk"],
+        ["Usually", "Black coffee, which staff call zai fe"],
+        ["This shop", "Cold-drink surcharge not entered. Ask the waiter."]
+      ].forEach(([label, value]) => {
+        const row = el("div", "row");
+        row.append(el("b", "", label), el("span", "", value));
+        rows.append(row);
+      });
+      screenEl.append(rows);
+      screenEl.append(el("p", "note", "沙 is sugar, 走 means without, and 奶 is milk or condensed milk. A word-for-word translation does not say this."));
+      screenEl.append(section("Other lines on this menu", [
+        ["菠蘿油", "Pineapple bun with butter"],
+        ["凍檸茶", "Iced lemon tea. Cold drinks may cost extra."],
+        ["常餐", "Set meal. The drink choice depends on the shop."]
+      ]));
+      dockEl.className = "dock has-rule";
+      dockEl.innerHTML = "";
+      dockEl.append(primary("Make the order card", () => go("card")));
+    }
+
+    function renderCard() {
+      screenEl.innerHTML = "";
+      screenEl.append(backButton("menu"));
+      const pass = el("div", "pass");
+      const top = el("div", "pass-top");
+      top.append(el("div", "for", "Show this to the waiter"));
+      top.append(el("div", "han", "咖啡，飛沙走奶"));
+      const body = el("div", "pass-body");
+      body.append(el("div", "en", "Black coffee, no sugar, no milk"));
+      body.append(el("div", "confirm", "Please confirm which drink."));
+      pass.append(top, el("div", "perf"), body);
+      screenEl.append(pass);
+      const explain = el("div", "explain");
+      explain.append(picture("images/coffee.jpg", "", "A glass of black coffee, no sugar and no milk"));
+      explain.append(el("p", "", "This is the drink on the card: black coffee, no sugar, no milk."));
+      screenEl.append(explain);
+      const use = el("div", "steps-use");
+      [["1", "Turn the top half toward the counter."], ["2", "They read the Chinese."], ["3", "You read the English."]].forEach(([n, text]) => {
+        const line = el("div");
+        line.append(el("i", "", n), el("span", "", text));
+        use.append(line);
+      });
+      screenEl.append(use);
+      screenEl.append(section("Phrases you can add", [
+        ["少甜", "Less sugar"],
+        ["走冰", "No ice"],
+        ["熱", "Hot, if you do not want it cold"]
+      ]));
+      dockEl.className = "dock has-rule";
+      dockEl.innerHTML = "";
+      dockEl.append(primary("Add to My Hong Kong breakfast", () => go("list")));
+    }
+
+    function pickedPeople() {
+      return people.filter((person) => state.share.picked[person.id]);
+    }
+
+    function renderShared() {
+      if (state.share.sent) {
+        renderOpened();
+        return;
+      }
+      const chosen = pickedPeople();
+      screenEl.innerHTML = "";
+      const back = el("button", "back", "Back to the list");
+      back.type = "button";
+      back.addEventListener("click", () => {
+        state.shared = false;
+        render();
+      });
+      screenEl.append(back);
+      screenEl.append(el("div", "kicker", "Sample contacts"));
+      screenEl.append(el("h1", "place", "Share with friends"));
+      const friends = el("div", "friends");
+      people.forEach((person) => {
+        const button = el("button", "friend");
+        button.type = "button";
+        button.setAttribute("aria-pressed", state.share.picked[person.id] ? "true" : "false");
+        button.append(picture(person.photo, "avatar", person.name), el("b", "", person.name), el("span", "", person.when));
+        button.addEventListener("click", () => {
+          state.share.picked[person.id] = !state.share.picked[person.id];
+          render();
+        });
+        friends.append(button);
+      });
+      screenEl.append(friends);
+      const preview = el("div", "share-preview");
+      const previewTop = el("div", "share-preview-top");
+      previewTop.append(picture("images/logo.jpg", "logo", "Sik Jo Mei logo"));
+      const previewText = el("div");
+      previewText.append(el("b", "", "Sik Jo Mei"));
+      previewText.append(el("span", "", "My Hong Kong breakfast · 3 places"));
+      previewTop.append(previewText);
+      const thumbs = el("div", "thumbs");
+      listPhotos.forEach(([src, alt]) => thumbs.append(picture(src, "", alt)));
+      preview.append(previewTop, thumbs);
+      screenEl.append(preview);
+      const note = document.createElement("textarea");
+      note.className = "note-box";
+      note.value = state.share.note;
+      note.setAttribute("aria-label", "Note to your friends");
+      note.addEventListener("input", () => {
+        state.share.note = note.value;
+      });
+      screenEl.append(note);
+      const channels = el("div", "channels");
+      [["whatsapp", "WhatsApp"], ["messages", "Messages"]].forEach(([id, label]) => {
+        const button = el("button", "", "");
+        const icon = el("span", "chan-icon");
+        icon.innerHTML = id === "whatsapp"
+          ? '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5h10a1 1 0 0 1 1 1V10a1 1 0 0 1-1 1H7.2L4 13.2V11H3a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>'
+          : '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3.5" width="12" height="9" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M3 5l5 3.2L13 5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>';
+        button.append(icon, document.createTextNode(label));
+        button.type = "button";
+        button.setAttribute("aria-pressed", state.share.channel === id ? "true" : "false");
+        button.addEventListener("click", () => {
+          state.share.channel = id;
+          render();
+        });
+        channels.append(button);
+      });
+      screenEl.append(channels);
+      const row = el("div", "link-row");
+      row.append(el("code", "", shareLink));
+      const copy = el("button", "", state.share.copied ? "Copied" : "Copy");
+      copy.type = "button";
+      copy.addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText("https://" + shareLink); } catch (err) {}
+        state.share.copied = true;
+        render();
+        setTimeout(() => {
+          state.share.copied = false;
+          if (state.shared && !state.share.sent) render();
+        }, 1400);
+      });
+      row.append(copy);
+      screenEl.append(row);
+      screenEl.append(el("p", "note", "Pick who gets it, edit the note, then send. This stays on the demo phone."));
+      dockEl.className = "dock has-rule";
+      dockEl.innerHTML = "";
+      const channelName = state.share.channel === "whatsapp" ? "WhatsApp" : "Messages";
+      const label = chosen.length === 0
+        ? "Choose a friend"
+        : chosen.length === 1
+          ? "Send to " + chosen[0].name + " on " + channelName
+          : "Send to " + chosen.length + " friends on " + channelName;
+      const send = primary(label, () => {
+        if (!pickedPeople().length) return;
+        state.share.sent = true;
+        state.share.going = "";
+        render();
+      });
+      send.disabled = chosen.length === 0;
+      dockEl.append(send);
+    }
+
+    function renderOpened() {
+      const chosen = pickedPeople();
+      const names = chosen.map((person) => person.name);
+      const who = names.length === 1 ? names[0] : names.slice(0, -1).join(", ") + " and " + names[names.length - 1];
+      const places = [
+        { id: "wing", name: "Wing Kee Cafe", meta: "Black coffee, no sugar, no milk · queue about 15 min", photo: "images/cafe.jpg" },
+        { id: "shun", name: "Shun Hing Cafe", meta: "Pineapple bun with butter · queue about 22 min", photo: "images/bun.jpg" },
+        { id: "harbor", name: "Harbor Window", meta: "Milk tea, less sugar · sample place", photo: "images/milktea.jpg" }
+      ];
+      screenEl.innerHTML = "";
+      const back = el("button", "back", "Back to send");
+      back.type = "button";
+      back.addEventListener("click", () => {
+        state.share.sent = false;
+        render();
+      });
+      screenEl.append(back);
+      screenEl.append(el("div", "kicker", "What " + who + " opened"));
+      screenEl.append(el("h1", "place", "My Hong Kong breakfast"));
+      const message = el("div", "message");
+      const from = el("div", "message-who who");
+      from.append(picture("images/emma.jpg", "", "Emma"), el("span", "", "From Emma"));
+      message.append(from);
+      message.append(el("p", "", state.share.note || "Emma sent this list."));
+      screenEl.append(message);
+      places.forEach((place) => {
+        const ticket = el("button", "ticket" + (state.share.going === place.id ? " on" : ""));
+        ticket.type = "button";
+        if (place.photo) {
+          const glyph = el("div", "glyph");
+          glyph.append(picture(place.photo, "", place.name));
+          ticket.append(glyph);
+        } else {
+          ticket.append(el("div", "tile", "茶"));
+        }
+        const info = el("div");
+        info.append(el("div", "shop-name", place.name));
+        info.append(el("div", "shop-meta", place.meta));
+        ticket.append(info);
+        ticket.addEventListener("click", () => {
+          state.share.going = place.id;
+          render();
+        });
+        screenEl.append(ticket);
+      });
+      if (state.share.going) {
+        const place = places.find((item) => item.id === state.share.going);
+        const reply = el("div", "reply");
+        reply.append(picture(chosen[0].photo, "avatar", chosen[0].name));
+        const replyText = el("div");
+        replyText.append(el("b", "", chosen[0].name));
+        replyText.append(el("p", "", "I'll start at " + place.name + "."));
+        reply.append(replyText);
+        screenEl.append(reply);
+      } else {
+        screenEl.append(el("p", "note", "Tap the cafe they want to try first."));
+      }
+      dockEl.className = "dock has-rule";
+      dockEl.innerHTML = "";
+      dockEl.append(primary("Run the path again", () => go("cover", "wing")));
+    }
+
+    function renderList() {
+      if (state.shared) {
+        renderShared();
+        return;
+      }
+      const item = shop();
+      screenEl.innerHTML = "";
+      screenEl.append(backButton("card"));
+      const head = el("div", "saved-head");
+      const kicker = el("div", "saved-kicker");
+      const mark = el("div", "saved-mark");
+      mark.innerHTML = '<svg width="18" height="18" viewBox="0 0 22 22" aria-hidden="true"><path d="M4 11.5 8.5 16 18 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      kicker.append(mark, el("div", "kicker", "Saved"));
+      head.append(kicker, el("h1", "place list-title", "My Hong Kong breakfast"));
+      screenEl.append(head);
+      screenEl.append(el("p", "sub", "3 places · a list you can share"));
+      const ticket = el("div", "ticket");
+      const glyph = el("div", "glyph");
+      glyph.append(picture(item.photo, "", item.name));
+      const info = el("div");
+      info.append(el("div", "shop-name", item.name));
+      info.append(el("div", "shop-meta", "Black coffee, no sugar, no milk · queue about " + item.queue + " min · " + item.updated.toLowerCase()));
+      ticket.append(glyph, info);
+      screenEl.append(ticket);
+      const second = el("div", "ticket");
+      const bun = el("div", "glyph");
+      bun.append(picture("images/bun.jpg", "", "Pineapple bun"));
+      const secondInfo = el("div");
+      secondInfo.append(el("div", "shop-name", "Shun Hing Cafe"));
+      secondInfo.append(el("div", "shop-meta", "Pineapple bun with butter · already on this list"));
+      second.append(bun, secondInfo);
+      const third = el("div", "ticket");
+      third.append(el("div", "tile", "茶"), (function () {
+        const node = el("div");
+        node.append(el("div", "shop-name", "Harbor Window"));
+        node.append(el("div", "shop-meta", "Milk tea, less sugar · sample place"));
+        return node;
+      })());
+      screenEl.append(second, third);
+      screenEl.append(el("p", "fine", "Sample list. These cafes are not real partners, and the model is not live."));
+      dockEl.className = "dock has-rule";
+      dockEl.innerHTML = "";
+      dockEl.append(primary("Share with friends", () => {
+        state.shared = true;
+        state.share.sent = false;
+        state.share.going = "";
+        render();
+      }));
+      const again = el("button", "ghost", "Run the path again");
+      again.type = "button";
+      again.addEventListener("click", () => go("cover", "wing"));
+      dockEl.append(again);
+    }
+
+    function renderSteps() {
+      stepsEl.innerHTML = "";
+      const current = state.screen === "reading" ? "menu" : state.screen;
+      steps.forEach((step) => {
+        const button = el("button");
+        button.type = "button";
+        if (step.id === current) button.setAttribute("aria-current", "step");
+        button.append(el("strong", "", step.title), el("span", "", step.line));
+        button.addEventListener("click", () => go(step.id, "wing"));
+        stepsEl.append(button);
+      });
+    }
+
+    function render() {
+      document.body.classList.toggle("cues-off", !state.cues);
+      document.body.classList.toggle("frame", state.frame);
+      document.querySelector(".phone").classList.toggle("is-cover", state.screen === "cover");
+      if (state.screen === "cover") renderCover();
+      else if (state.screen === "map") renderMap();
+      else if (state.screen === "shop") renderShop();
+      else if (state.screen === "reading") renderReading();
+      else if (state.screen === "menu") renderMenu();
+      else if (state.screen === "card") renderCard();
+      else renderList();
+      renderSteps();
+    }
+
+    document.getElementById("hide-cues").addEventListener("click", () => {
+      state.cues = !state.cues;
+      document.getElementById("hide-cues").textContent = state.cues ? "Hide cues" : "Show cues";
+      render();
+    });
+    document.getElementById("restart").addEventListener("click", () => go("cover", "wing"));
+
+    const initial = params.get("screen");
+    if (["cover", "map", "shop", "menu", "card", "list"].includes(initial)) state.screen = initial;
+    if (!state.cues) document.getElementById("hide-cues").textContent = "Show cues";
+    render();
+  </script>
+</body>
+</html>

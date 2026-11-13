@@ -1,0 +1,12 @@
+#!/bin/bash
+set -euo pipefail
+
+echo "Checking system dependencies..."
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "Node.js is required to run this prototype." >&2
+  exit 1
+fi
+
+echo "Node $(node --version) OK"
+echo "System dependencies verified."
