@@ -238,6 +238,20 @@
     }
     .glyph img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .shop-name { font-size: 16px; font-weight: 750; }
+    .name-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .rank-num {
+      min-width: 28px;
+      height: 28px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: #1c1c1c;
+      color: #fefefe;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      font-weight: 750;
+      flex: none;
+    }
     .shop-meta { color: var(--muted); font-size: 12px; margin-top: 2px; }
     .q { text-align: right; color: var(--sun-deep); }
     .q b { display: block; font-size: 20px; letter-spacing: -0.03em; }
@@ -1403,27 +1417,30 @@
 
     function renderCommunity() {
       screenEl.innerHTML = "";
-      const back = el("button", "back", "返回");
+      const back = el("button", "back", "Back");
       back.type = "button";
       back.addEventListener("click", () => go("map"));
       screenEl.append(back);
-      screenEl.append(el("div", "kicker", "抹茶 · 朱古力"));
-      screenEl.append(el("h1", "place", "興趣社區"));
-      screenEl.append(el("p", "sub", "同一種口味的人留在這裡。"));
+      screenEl.append(el("div", "kicker", "Matcha · Chocolate"));
+      screenEl.append(el("h1", "place", "Interest communities"));
+      screenEl.append(el("p", "sub", "People who share a taste stay here."));
       [
-        ["抹", "抹茶", "本週第 3", "連續三杯"],
-        ["朱", "朱古力", "本週第 1", "三間店"]
+        { photo: "images/matcha.jpg", alt: "Matcha drink", name: "Matcha", rank: "3rd this week", badge: "Three in a row", place: "3" },
+        { photo: "images/chocolate.jpg", alt: "Chocolate drink", name: "Chocolate", rank: "1st this week", badge: "Three cafes", place: "1" }
       ].forEach(function (item) {
         const ticket = el("div", "ticket");
-        ticket.append(el("div", "tile", item[0]));
+        const glyph = el("div", "glyph");
+        glyph.append(picture(item.photo, "", item.alt));
         const info = el("div");
-        info.append(el("div", "shop-name", item[1]));
-        info.append(meta("排名", item[2]));
-        info.append(meta("徽章", item[3]));
-        ticket.append(info);
+        const head = el("div", "name-row");
+        head.append(el("div", "shop-name", item.name), el("div", "rank-num", item.place));
+        info.append(head);
+        info.append(meta("Rank", item.rank));
+        info.append(meta("Badge", item.badge));
+        ticket.append(glyph, info);
         screenEl.append(ticket);
       });
-      screenEl.append(el("p", "fine", "示範頁。排名和徽章不是真實會員數據。"));
+      screenEl.append(el("p", "fine", "Sample page. Rankings and badges are not real member data."));
       dockEl.className = "dock";
       dockEl.innerHTML = "";
     }
