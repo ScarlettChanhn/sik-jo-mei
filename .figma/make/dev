@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 cd "$(dirname "$0")/../.."
@@ -11,5 +11,6 @@ if [ -f .figma/make/env ]; then
 fi
 
 PORT="${PORT:-3000}"
+HOST="${FIGMA_DEV_SERVER_HOST:-0.0.0.0}"
 echo "Starting development server on port ${PORT}"
-exec npx --no-install serve . --listen "tcp://0.0.0.0:${PORT}" --no-clipboard
+exec npx --no-install serve . --listen "tcp://${HOST}:${PORT}" --no-clipboard

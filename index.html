@@ -1019,8 +1019,9 @@
       panel.append(meta("Menus", "Their handwritten board becomes your order card"));
       screenEl.append(panel);
       screenEl.append(el("p", "fine", "Sample shops, not real partners. The menu scan is a prepared example. The model is not live."));
-      dockEl.className = "dock";
+      dockEl.className = "dock has-rule";
       dockEl.innerHTML = "";
+      dockEl.append(primary("興趣社區", () => go("community")));
     }
 
     function renderShop() {
@@ -1400,6 +1401,33 @@
       dockEl.append(again);
     }
 
+    function renderCommunity() {
+      screenEl.innerHTML = "";
+      const back = el("button", "back", "返回");
+      back.type = "button";
+      back.addEventListener("click", () => go("map"));
+      screenEl.append(back);
+      screenEl.append(el("div", "kicker", "抹茶 · 朱古力"));
+      screenEl.append(el("h1", "place", "興趣社區"));
+      screenEl.append(el("p", "sub", "同一種口味的人留在這裡。"));
+      [
+        ["抹", "抹茶", "本週第 3", "連續三杯"],
+        ["朱", "朱古力", "本週第 1", "三間店"]
+      ].forEach(function (item) {
+        const ticket = el("div", "ticket");
+        ticket.append(el("div", "tile", item[0]));
+        const info = el("div");
+        info.append(el("div", "shop-name", item[1]));
+        info.append(meta("排名", item[2]));
+        info.append(meta("徽章", item[3]));
+        ticket.append(info);
+        screenEl.append(ticket);
+      });
+      screenEl.append(el("p", "fine", "示範頁。排名和徽章不是真實會員數據。"));
+      dockEl.className = "dock";
+      dockEl.innerHTML = "";
+    }
+
     let shown = "";
 
     function render() {
@@ -1415,6 +1443,7 @@
       else if (state.screen === "reading") renderReading();
       else if (state.screen === "menu") renderMenu();
       else if (state.screen === "card") renderCard();
+      else if (state.screen === "community") renderCommunity();
       else renderList();
       if (changed) {
         screenEl.classList.remove("arrive");
@@ -1424,7 +1453,7 @@
     }
 
     const initial = params.get("screen");
-    if (["cover", "map", "shop", "shop2", "scan", "reading", "menu", "card", "list"].includes(initial)) state.screen = initial;
+    if (["cover", "map", "shop", "shop2", "scan", "reading", "menu", "card", "list", "community"].includes(initial)) state.screen = initial;
     if (params.get("shop") === "shun") state.shopId = "shun";
     render();
   </script>
