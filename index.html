@@ -67,6 +67,14 @@
       overflow: auto;
       padding: 18px 16px 8px;
     }
+    .screen.arrive { animation: arrive 180ms ease; }
+    @keyframes arrive {
+      from { opacity: 0.35; }
+      to { opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .screen.arrive { animation: none; }
+    }
 
     .dock {
       padding: 10px 16px 16px;
@@ -804,6 +812,14 @@
         means: "No sugar, no milk",
         ask: "Black coffee, which staff call zai fe",
         note: "沙 is sugar, 走 means without, and 奶 is milk.",
+        order: "Order black coffee",
+        phrases: [
+          ["飛沙走奶", "No sugar, no milk"],
+          ["少甜", "Less sugar"],
+          ["少冰", "Less ice"],
+          ["走冰", "No ice"],
+          ["熱", "Hot"]
+        ],
         photo: "images/coffee.jpg",
         alt: "Black coffee, no sugar, no milk"
       },
@@ -815,6 +831,12 @@
         means: "A bun with a pat of butter",
         ask: "Pineapple bun with butter",
         note: "油 here is the butter, not cooking oil.",
+        order: "Order the pineapple bun",
+        phrases: [
+          ["加熱", "Heat it up"],
+          ["加牛油", "Extra butter"],
+          ["少糖", "Less sugar on the bun"]
+        ],
         photo: "images/bun.jpg",
         alt: "Pineapple bun with butter"
       },
@@ -826,6 +848,14 @@
         means: "Lemon tea, served cold",
         ask: "Iced lemon tea. Cold drinks may cost extra.",
         note: "凍 is cold. 檸茶 is lemon tea.",
+        order: "Order the lemon tea",
+        phrases: [
+          ["少甜", "Less sugar"],
+          ["走甜", "No sugar"],
+          ["少冰", "Less ice"],
+          ["走冰", "No ice"],
+          ["熱", "Hot, if you do not want it iced"]
+        ],
         photo: "",
         alt: "Iced lemon tea"
       }
@@ -986,7 +1016,7 @@
       panel.append(el("div", "kicker", "On this walk"));
       panel.append(meta("Cafes", "2 local, not chains"));
       panel.append(meta("Queues", "Staff and recent visitors"));
-      panel.append(meta("Menus", "Handwritten lines become an order card"));
+      panel.append(meta("Menus", "Their handwritten board becomes your order card"));
       screenEl.append(panel);
       screenEl.append(el("p", "fine", "Sample shops, not real partners. The menu scan is a prepared example. The model is not live."));
       dockEl.className = "dock";
@@ -1016,6 +1046,7 @@
       details.append(meta("Hours", item.hours));
       screenEl.append(details);
       screenEl.append(section("Also ordered here", item.orders));
+      screenEl.append(el("p", "note", "When you arrive, the menu is a board the cafe writes by hand."));
       dockEl.className = "dock has-rule";
       dockEl.innerHTML = "";
       dockEl.append(primary("I'm at this cafe", () => go("shop2")));
@@ -1034,11 +1065,11 @@
       minutes.append(el("small", "", "minutes"));
       row.append(minutes, el("div", "fresh", item.fresh));
       const facts = el("div", "facts");
-      ["At the counter", "Handwritten board", "Open now"].forEach((label) => facts.append(el("span", "fact", label)));
+      ["At the counter", "Their board", "Open now"].forEach((label) => facts.append(el("span", "fact", label)));
       card.append(row, facts);
       screenEl.append(card);
-      screenEl.append(el("p", "note", "The board is handwritten. Scan it, pick a line, and we make a card you can show."));
-      screenEl.append(el("div", "section-label", "On the board"));
+      screenEl.append(el("p", "note", "The cafe writes this board. Scan a line, then show the waiter a card."));
+      screenEl.append(el("div", "section-label", "Their board"));
       const board = el("div", "board");
       dishes.forEach((line) => board.append(el("div", "han", line.han)));
       screenEl.append(board);
@@ -1053,7 +1084,7 @@
       screenEl.append(backButton("shop2"));
       screenEl.append(el("div", "kicker", item.name));
       screenEl.append(el("h1", "place", "Scan the menu"));
-      screenEl.append(el("p", "sub", "Point the camera at the handwritten board."));
+      screenEl.append(el("p", "sub", "Point your camera at the board on their counter."));
       const finder = el("div", "finder");
       finder.setAttribute("aria-label", "Camera frame");
       for (let i = 0; i < 4; i += 1) finder.append(el("i"));
@@ -1061,10 +1092,10 @@
       dishes.forEach((line) => board.append(el("div", "han", line.han)));
       finder.append(board);
       screenEl.append(finder);
-      screenEl.append(el("p", "note", "Hold steady. This demo uses a prepared board."));
+      screenEl.append(el("p", "note", "These lines are the cafe's. Hold steady. This demo uses a prepared board."));
       dockEl.className = "dock has-rule";
       dockEl.innerHTML = "";
-      dockEl.append(primary("Capture the board", () => go("reading")));
+      dockEl.append(primary("Read their board", () => go("reading")));
     }
 
     function renderReading() {
@@ -1073,8 +1104,8 @@
       screenEl.innerHTML = "";
       screenEl.append(backButton("scan"));
       screenEl.append(el("div", "kicker", item.name));
-      screenEl.append(el("h1", "place", "3 lines found"));
-      screenEl.append(el("p", "sub", "Tap the dish you want. Then read that line."));
+      screenEl.append(el("h1", "place", "Their board says"));
+      screenEl.append(el("p", "sub", "Tap the dish you want to order."));
       dishes.forEach((line) => {
         const button = el("button", "pick" + (line.id === chosen.id ? " on" : ""));
         button.type = "button";
@@ -1086,10 +1117,10 @@
         });
         screenEl.append(button);
       });
-      screenEl.append(el("p", "note", "Queue is about " + item.queue + " minutes. Order when you reach the counter."));
+      screenEl.append(el("p", "note", "The wait is still about " + item.queue + " minutes."));
       dockEl.className = "dock has-rule";
       dockEl.innerHTML = "";
-      dockEl.append(primary("Read this line", () => go("menu")));
+      dockEl.append(primary(chosen.order, () => go("menu")));
     }
 
     function renderMenu() {
@@ -1105,7 +1136,7 @@
       [
         ["Means", line.means],
         ["Ask for", line.ask],
-        ["Queue", "About " + item.queue + " minutes. Order at the counter."]
+        ["Queue", "About " + item.queue + " minutes. You are at the counter."]
       ].forEach(([label, value]) => {
         const row = el("div", "row");
         row.append(el("b", "", label), el("span", "", value));
@@ -1115,7 +1146,7 @@
       screenEl.append(el("p", "note", line.note));
       dockEl.className = "dock has-rule";
       dockEl.innerHTML = "";
-      dockEl.append(primary("Make the order card", () => go("card")));
+      dockEl.append(primary("Card for the waiter", () => go("card")));
     }
 
     function renderCard() {
@@ -1144,11 +1175,7 @@
         use.append(line);
       });
       screenEl.append(use);
-      screenEl.append(section("Phrases you can add", [
-        ["少甜", "Less sugar"],
-        ["走冰", "No ice"],
-        ["熱", "Hot, if you do not want it cold"]
-      ]));
+      screenEl.append(section("Phrases you can add", line.phrases));
       dockEl.className = "dock has-rule";
       dockEl.innerHTML = "";
       dockEl.append(primary("Add to My Hong Kong breakfast", () => go("list")));
@@ -1373,7 +1400,11 @@
       dockEl.append(again);
     }
 
+    let shown = "";
+
     function render() {
+      const changed = shown !== state.screen;
+      shown = state.screen;
       document.body.classList.toggle("frame", state.frame);
       document.querySelector(".phone").classList.toggle("is-cover", state.screen === "cover");
       if (state.screen === "cover") renderCover();
@@ -1385,6 +1416,11 @@
       else if (state.screen === "menu") renderMenu();
       else if (state.screen === "card") renderCard();
       else renderList();
+      if (changed) {
+        screenEl.classList.remove("arrive");
+        void screenEl.offsetWidth;
+        screenEl.classList.add("arrive");
+      }
     }
 
     const initial = params.get("screen");
