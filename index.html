@@ -546,6 +546,65 @@
       place-items: center;
     }
 
+    .board {
+      margin-top: 8px;
+      background: var(--cream);
+      border: 1px solid #f3d3c0;
+      border-radius: 16px;
+      padding: 2px 14px;
+    }
+    .board .han {
+      padding: 12px 0;
+      border-bottom: 1px dashed #e0c2a4;
+      font-size: 22px;
+      letter-spacing: 0.08em;
+    }
+    .board .han:last-child { border-bottom: 0; }
+
+    .finder {
+      position: relative;
+      margin-top: 16px;
+      background: #1c1c1c;
+      border-radius: 18px;
+      min-height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 18px;
+    }
+    .finder .slip, .finder .board { margin: 0; width: 100%; }
+    .finder i {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-style: solid;
+      border-color: #f8f1e7;
+    }
+    .finder i:nth-child(1) { top: 12px; left: 12px; border-width: 3px 0 0 3px; }
+    .finder i:nth-child(2) { top: 12px; right: 12px; border-width: 3px 3px 0 0; }
+    .finder i:nth-child(3) { bottom: 12px; left: 12px; border-width: 0 0 3px 3px; }
+    .finder i:nth-child(4) { bottom: 12px; right: 12px; border-width: 0 3px 3px 0; }
+
+    button.pick {
+      width: 100%;
+      margin-top: 8px;
+      text-align: left;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      display: block;
+    }
+    button.pick b {
+      display: block;
+      font-size: 20px;
+      font-weight: 750;
+      letter-spacing: 0.06em;
+    }
+    button.pick span { display: block; margin-top: 2px; color: var(--muted); font-size: 14px; }
+    button.pick.on { border-color: #1c1c1c; background: var(--jade-soft); }
+    button.pick.on span { color: var(--ink); }
+
     .slip {
       margin-top: 14px;
       background: var(--cream);
@@ -716,6 +775,7 @@
       shared: false,
       frame: params.get("frame") === "1",
       lang: params.get("lang") === "zh" ? "zh" : "en",
+      dishId: "coffee",
       share: {
         picked: { maya: true },
         note: "Start at Wing Kee. The queue is about 15 minutes. Show the card: black coffee, no sugar, no milk.",
@@ -735,6 +795,41 @@
       ["images/bun.jpg", "Pineapple bun"],
       ["images/milktea.jpg", "Milk tea"]
     ];
+    const dishes = [
+      {
+        id: "coffee",
+        han: "飛沙走奶",
+        en: "Black coffee, no sugar, no milk",
+        card: "咖啡，飛沙走奶",
+        means: "No sugar, no milk",
+        ask: "Black coffee, which staff call zai fe",
+        note: "沙 is sugar, 走 means without, and 奶 is milk.",
+        photo: "images/coffee.jpg",
+        alt: "Black coffee, no sugar, no milk"
+      },
+      {
+        id: "bun",
+        han: "菠蘿油",
+        en: "Pineapple bun with butter",
+        card: "菠蘿油",
+        means: "A bun with a pat of butter",
+        ask: "Pineapple bun with butter",
+        note: "油 here is the butter, not cooking oil.",
+        photo: "images/bun.jpg",
+        alt: "Pineapple bun with butter"
+      },
+      {
+        id: "tea",
+        han: "凍檸茶",
+        en: "Iced lemon tea",
+        card: "凍檸茶",
+        means: "Lemon tea, served cold",
+        ask: "Iced lemon tea. Cold drinks may cost extra.",
+        note: "凍 is cold. 檸茶 is lemon tea.",
+        photo: "",
+        alt: "Iced lemon tea"
+      }
+    ];
     const shareLink = "sikjomei.example/breakfast";
 
     const screenEl = document.getElementById("screen");
@@ -751,6 +846,10 @@
     }
 
     function shop() { return shops[state.shopId]; }
+
+    function dish() {
+      return dishes.find((item) => item.id === state.dishId) || dishes[0];
+    }
 
     function el(tag, className, text) {
       const node = document.createElement(tag);
@@ -919,74 +1018,125 @@
       screenEl.append(section("Also ordered here", item.orders));
       dockEl.className = "dock has-rule";
       dockEl.innerHTML = "";
-      dockEl.append(primary("Scan the menu", () => {
-        state.screen = "reading";
-        render();
-        window.setTimeout(() => {
-          if (state.screen === "reading") go("menu");
-        }, 700);
-      }));
+      dockEl.append(primary("I'm at this cafe", () => go("shop2")));
+    }
+
+    function renderShop2() {
+      const item = shop();
+      screenEl.innerHTML = "";
+      screenEl.append(backButton("shop"));
+      screenEl.append(picture(item.photo, "hero", item.name));
+      screenEl.append(el("div", "kicker", "You're here · " + item.walk));
+      screenEl.append(el("h1", "place", item.name));
+      const card = el("div", "queue-card");
+      const row = el("div", "queue-row");
+      const minutes = el("div", "minutes", item.queue);
+      minutes.append(el("small", "", "minutes"));
+      row.append(minutes, el("div", "fresh", item.fresh));
+      const facts = el("div", "facts");
+      ["At the counter", "Handwritten board", "Open now"].forEach((label) => facts.append(el("span", "fact", label)));
+      card.append(row, facts);
+      screenEl.append(card);
+      screenEl.append(el("p", "note", "The board is handwritten. Scan it, pick a line, and we make a card you can show."));
+      screenEl.append(el("div", "section-label", "On the board"));
+      const board = el("div", "board");
+      dishes.forEach((line) => board.append(el("div", "han", line.han)));
+      screenEl.append(board);
+      dockEl.className = "dock has-rule";
+      dockEl.innerHTML = "";
+      dockEl.append(primary("Scan the menu", () => go("scan")));
+    }
+
+    function renderScan() {
+      const item = shop();
+      screenEl.innerHTML = "";
+      screenEl.append(backButton("shop2"));
+      screenEl.append(el("div", "kicker", item.name));
+      screenEl.append(el("h1", "place", "Scan the menu"));
+      screenEl.append(el("p", "sub", "Point the camera at the handwritten board."));
+      const finder = el("div", "finder");
+      finder.setAttribute("aria-label", "Camera frame");
+      for (let i = 0; i < 4; i += 1) finder.append(el("i"));
+      const board = el("div", "board");
+      dishes.forEach((line) => board.append(el("div", "han", line.han)));
+      finder.append(board);
+      screenEl.append(finder);
+      screenEl.append(el("p", "note", "Hold steady. This demo uses a prepared board."));
+      dockEl.className = "dock has-rule";
+      dockEl.innerHTML = "";
+      dockEl.append(primary("Capture the board", () => go("reading")));
     }
 
     function renderReading() {
+      const item = shop();
+      const chosen = dish();
       screenEl.innerHTML = "";
-      screenEl.append(el("div", "kicker", shop().name));
-      screenEl.append(el("h1", "place", "Reading the handwritten line"));
-      const slip = el("div", "slip");
-      slip.innerHTML = '<div class="han">飛沙走奶</div><div class="label">Prepared example · a live model is not running</div>';
-      screenEl.append(slip);
-      dockEl.className = "dock";
+      screenEl.append(backButton("scan"));
+      screenEl.append(el("div", "kicker", item.name));
+      screenEl.append(el("h1", "place", "3 lines found"));
+      screenEl.append(el("p", "sub", "Tap the dish you want. Then read that line."));
+      dishes.forEach((line) => {
+        const button = el("button", "pick" + (line.id === chosen.id ? " on" : ""));
+        button.type = "button";
+        button.setAttribute("aria-pressed", line.id === chosen.id ? "true" : "false");
+        button.append(el("b", "han", line.han), el("span", "", line.en));
+        button.addEventListener("click", () => {
+          state.dishId = line.id;
+          render();
+        });
+        screenEl.append(button);
+      });
+      screenEl.append(el("p", "note", "Queue is about " + item.queue + " minutes. Order when you reach the counter."));
+      dockEl.className = "dock has-rule";
       dockEl.innerHTML = "";
+      dockEl.append(primary("Read this line", () => go("menu")));
     }
 
     function renderMenu() {
       const item = shop();
+      const line = dish();
       screenEl.innerHTML = "";
-      screenEl.append(backButton("shop"));
+      screenEl.append(backButton("reading"));
       screenEl.append(el("div", "kicker", item.name));
-      screenEl.append(el("h1", "place", "What the line means"));
-      const slip = el("div", "slip");
-      slip.innerHTML = '<div class="han">飛沙走奶</div><div class="label">Characters on the menu</div>';
-      screenEl.append(slip);
-      screenEl.append(picture("images/coffee.jpg", "dish", "Black coffee, no sugar, no milk"));
+      screenEl.append(el("h1", "place han", line.han));
+      screenEl.append(el("p", "sub", line.en));
+      if (line.photo) screenEl.append(picture(line.photo, "dish", line.alt));
       const rows = el("div", "rows");
       [
-        ["Means", "No sugar, no milk"],
-        ["Usually", "Black coffee, which staff call zai fe"],
-        ["This shop", "Cold-drink surcharge not entered. Ask the waiter."]
+        ["Means", line.means],
+        ["Ask for", line.ask],
+        ["Queue", "About " + item.queue + " minutes. Order at the counter."]
       ].forEach(([label, value]) => {
         const row = el("div", "row");
         row.append(el("b", "", label), el("span", "", value));
         rows.append(row);
       });
       screenEl.append(rows);
-      screenEl.append(el("p", "note", "沙 is sugar, 走 means without, and 奶 is milk or condensed milk. A word-for-word translation does not say this."));
-      screenEl.append(section("Other lines on this menu", [
-        ["菠蘿油", "Pineapple bun with butter"],
-        ["凍檸茶", "Iced lemon tea. Cold drinks may cost extra."],
-        ["常餐", "Set meal. The drink choice depends on the shop."]
-      ]));
+      screenEl.append(el("p", "note", line.note));
       dockEl.className = "dock has-rule";
       dockEl.innerHTML = "";
       dockEl.append(primary("Make the order card", () => go("card")));
     }
 
     function renderCard() {
+      const line = dish();
       screenEl.innerHTML = "";
       screenEl.append(backButton("menu"));
       const pass = el("div", "pass");
       const top = el("div", "pass-top");
       top.append(el("div", "for", "Show this to the waiter"));
-      top.append(el("div", "han", "咖啡，飛沙走奶"));
+      top.append(el("div", "han", line.card));
       const body = el("div", "pass-body");
-      body.append(el("div", "en", "Black coffee, no sugar, no milk"));
-      body.append(el("div", "confirm", "Please confirm which drink."));
+      body.append(el("div", "en", line.en));
+      body.append(el("div", "confirm", "Please confirm this order."));
       pass.append(top, el("div", "perf"), body);
       screenEl.append(pass);
-      const explain = el("div", "explain");
-      explain.append(picture("images/coffee.jpg", "", "A glass of black coffee, no sugar and no milk"));
-      explain.append(el("p", "", "This is the drink on the card: black coffee, no sugar, no milk."));
-      screenEl.append(explain);
+      if (line.photo) {
+        const explain = el("div", "explain");
+        explain.append(picture(line.photo, "", line.alt));
+        explain.append(el("p", "", "This is the order on the card: " + line.en + "."));
+        screenEl.append(explain);
+      }
       const use = el("div", "steps-use");
       [["1", "Turn the top half toward the counter."], ["2", "They read the Chinese."], ["3", "You read the English."]].forEach(([n, text]) => {
         const line = el("div");
@@ -1190,7 +1340,7 @@
       glyph.append(picture(item.photo, "", item.name));
       const info = el("div");
       info.append(el("div", "shop-name", item.name));
-      info.append(el("div", "shop-meta", "Black coffee, no sugar, no milk · queue about " + item.queue + " min · " + item.updated.toLowerCase()));
+      info.append(el("div", "shop-meta", dish().en + " · queue about " + item.queue + " min · " + item.updated.toLowerCase()));
       ticket.append(glyph, info);
       screenEl.append(ticket);
       const second = el("div", "ticket");
@@ -1229,6 +1379,8 @@
       if (state.screen === "cover") renderCover();
       else if (state.screen === "map") renderMap();
       else if (state.screen === "shop") renderShop();
+      else if (state.screen === "shop2") renderShop2();
+      else if (state.screen === "scan") renderScan();
       else if (state.screen === "reading") renderReading();
       else if (state.screen === "menu") renderMenu();
       else if (state.screen === "card") renderCard();
@@ -1236,7 +1388,7 @@
     }
 
     const initial = params.get("screen");
-    if (["cover", "map", "shop", "menu", "card", "list"].includes(initial)) state.screen = initial;
+    if (["cover", "map", "shop", "shop2", "scan", "reading", "menu", "card", "list"].includes(initial)) state.screen = initial;
     if (params.get("shop") === "shun") state.shopId = "shun";
     render();
   </script>
