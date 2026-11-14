@@ -139,6 +139,8 @@
       background: var(--block);
       border-radius: 7px;
     }
+    button.block { cursor: pointer; }
+    button.block:hover { background: #fff; }
     .b1 { left: 12px; top: 12px; width: 70px; height: 62px; }
     .b2 { left: 90px; top: 14px; width: 66px; height: 58px; }
     .b3 { left: 196px; top: 14px; width: 128px; height: 58px; }
@@ -503,7 +505,7 @@
       padding: 16px 16px 14px;
     }
     .queue-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
-    .minutes { font-size: 64px; line-height: 0.85; letter-spacing: -0.05em; font-weight: 750; color: var(--sun-deep); }
+    .minutes { font-size: 40px; line-height: 0.9; letter-spacing: -0.04em; font-weight: 750; color: var(--ink); }
     .minutes small { display: block; margin-top: 6px; font-size: 14px; letter-spacing: 0; color: var(--muted); font-weight: 650; }
     .fresh {
       text-align: right;
@@ -522,16 +524,6 @@
       font-weight: 700;
     }
     .note { margin-top: 12px; color: var(--muted); font-size: 14px; line-height: 1.45; }
-    .aim {
-      margin-top: 14px;
-      background: var(--cream);
-      border: 1px dashed #f0c2a8;
-      border-radius: 16px;
-      padding: 16px;
-      text-align: center;
-    }
-    .aim .han { font-size: 28px; letter-spacing: 0.14em; }
-    .aim p { margin-top: 6px; color: var(--muted); font-size: 13px; }
     .steps-use { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
     .steps-use div {
       display: grid;
@@ -663,41 +655,12 @@
       border: 1px solid var(--line);
     }
 
-    .rail { width: 300px; flex: none; }
-    .rail h2 { font-size: 18px; margin-bottom: 6px; }
-    .rail .lead { color: var(--muted); font-size: 14px; line-height: 1.45; margin-bottom: 14px; }
-    .steps { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
-    .steps button {
-      width: 100%;
-      text-align: left;
-      background: transparent;
-      border: 1px solid transparent;
-      border-radius: 10px;
-      padding: 8px 10px;
-    }
-    .steps button strong { display: block; font-size: 14px; }
-    .steps button span { display: block; color: var(--muted); font-size: 13px; line-height: 1.35; margin-top: 2px; }
-    .steps button[aria-current="step"] { background: var(--card); border-color: var(--line); }
-    .rail .tools { display: flex; gap: 8px; margin-top: 16px; }
-    .rail .tools button {
-      font-size: 13px;
-      font-weight: 750;
-      border-radius: 999px;
-      padding: 7px 12px;
-      border: 1px solid #c5d0d6;
-      background: var(--card);
-    }
-
-    body.cues-off .rail { display: none; }
     body.frame { background: var(--phone); }
     body.frame .stage { padding: 0; min-height: 100vh; }
     body.frame .phone { width: 100vw; height: 100vh; max-height: none; border: 0; border-radius: 0; }
-    body.frame .rail { display: none; }
 
     @media (max-width: 820px) {
-      .stage { flex-direction: column; }
       .phone { width: min(390px, 100%); height: 740px; }
-      .rail { width: min(390px, 100%); }
     }
   </style>
 </head>
@@ -707,15 +670,6 @@
       <div class="screen" id="screen"></div>
       <div class="dock" id="dock"></div>
     </div>
-    <aside class="rail">
-      <h2>75-second demo</h2>
-      <p class="lead">Start on the cover, then tap the phone in this order. One short line at each step, then hand off to D. There is no paywall.</p>
-      <ol class="steps" id="steps"></ol>
-      <div class="tools">
-        <button type="button" id="hide-cues">Hide cues</button>
-        <button type="button" id="restart">Start again</button>
-      </div>
-    </aside>
   </div>
   <script>
     const shops = {
@@ -729,7 +683,12 @@
         hours: "7:00–18:00",
         queue: "15",
         updated: "Updated 8 minutes ago",
-        fresh: "Fresh · 8 min ago"
+        fresh: "8 min ago",
+        orders: [
+          ["菠蘿油", "Pineapple bun with butter"],
+          ["凍檸茶", "Iced lemon tea"],
+          ["絲襪奶茶", "Milk tea"]
+        ]
       },
       shun: {
         name: "Shun Hing Cafe",
@@ -741,25 +700,20 @@
         hours: "7:30–17:30",
         queue: "22",
         updated: "Updated 11 minutes ago",
-        fresh: "11 min ago"
+        fresh: "11 min ago",
+        orders: [
+          ["菠蘿油", "Pineapple bun with butter"],
+          ["凍檸茶", "Iced lemon tea"],
+          ["絲襪奶茶", "Milk tea"]
+        ]
       }
     };
-
-    const steps = [
-      { id: "cover", title: "Cover", line: "食咗未. Open the map when you are ready." },
-      { id: "map", title: "1 · Map", line: "Kowloon City. Cha chaan teng, not a chain." },
-      { id: "shop", title: "2 · Queue", line: "About fifteen minutes, updated eight minutes ago." },
-      { id: "menu", title: "3 · Menu", line: "Not a word-for-word translation." },
-      { id: "card", title: "4 · Order card", line: "Turn it to the waiter." },
-      { id: "list", title: "5 · List", line: "Add it. Share. How it makes money is D." }
-    ];
 
     const params = new URLSearchParams(location.search);
     const state = {
       screen: "cover",
       shopId: "wing",
       shared: false,
-      cues: params.get("cues") !== "0",
       frame: params.get("frame") === "1",
       lang: params.get("lang") === "zh" ? "zh" : "en",
       share: {
@@ -785,7 +739,6 @@
 
     const screenEl = document.getElementById("screen");
     const dockEl = document.getElementById("dock");
-    const stepsEl = document.getElementById("steps");
 
     function go(screen, shopId) {
       state.screen = screen;
@@ -886,7 +839,16 @@
       const city = el("div", "city");
       city.append(el("div", "road road-h"), el("div", "road road-v"), el("div", "park"), el("div", "water"));
       city.append(el("div", "road-label", "South Wall Rd"), el("div", "water-label", "Harbor"));
-      ["b1", "b2", "b3", "b4", "b5"].forEach((name) => city.append(el("div", "block " + name)));
+      ["b2", "b4", "b5"].forEach((name) => city.append(el("div", "block " + name)));
+      const wingBlock = el("button", "block b1");
+      wingBlock.type = "button";
+      wingBlock.setAttribute("aria-label", "Open Wing Kee Cafe");
+      wingBlock.addEventListener("click", () => go("shop", "wing"));
+      const shunBlock = el("button", "block b3");
+      shunBlock.type = "button";
+      shunBlock.setAttribute("aria-label", "Open Shun Hing Cafe");
+      shunBlock.addEventListener("click", () => go("shop", "shun"));
+      city.append(wingBlock, shunBlock);
       const wing = el("button", "pin p-wing on");
       wing.type = "button";
       wing.innerHTML = "<i></i><span>Wing Kee</span>";
@@ -901,7 +863,6 @@
       screenEl.append(city);
 
       screenEl.append(el("h1", "sheet-title", "Kowloon City"));
-      screenEl.append(el("p", "sub", "Eat Hong Kong the way locals do. Chains are hidden."));
       const chips = el("div", "chips");
       ["Cha chaan teng", "Not a chain", "Open now", "10-min walk"].forEach((label) => {
         chips.append(el("span", "chip", label));
@@ -951,21 +912,11 @@
       [item.kind, "Not a chain", "Open now"].forEach((label) => facts.append(el("span", "fact", label)));
       card.append(row, facts);
       screenEl.append(card);
-      screenEl.append(el("p", "note", item.updated + ". Staff update this, and so do people who just arrived. If the number is old, we show that."));
-      const aim = el("div", "aim");
-      aim.innerHTML = '<div class="han">飛沙走奶</div>';
-      aim.append(el("p", "", "Point the camera at one handwritten line."));
-      screenEl.append(aim);
       const details = el("div", "panel");
       details.append(meta("Address", item.address));
-      details.append(meta("Hours", item.hours + " · sample"));
+      details.append(meta("Hours", item.hours));
       screenEl.append(details);
-      screenEl.append(el("p", "note", "Afternoon tea and the cold-drink price are not entered for this shop. Ask the waiter."));
-      screenEl.append(section("People here also order", [
-        ["菠蘿油", "Pineapple bun with butter"],
-        ["凍檸茶", "Iced lemon tea"],
-        ["絲襪奶茶", "Milk tea, pulled through a cloth bag"]
-      ]));
+      screenEl.append(section("Also ordered here", item.orders));
       dockEl.className = "dock has-rule";
       dockEl.innerHTML = "";
       dockEl.append(primary("Scan the menu", () => {
@@ -1272,21 +1223,7 @@
       dockEl.append(again);
     }
 
-    function renderSteps() {
-      stepsEl.innerHTML = "";
-      const current = state.screen === "reading" ? "menu" : state.screen;
-      steps.forEach((step) => {
-        const button = el("button");
-        button.type = "button";
-        if (step.id === current) button.setAttribute("aria-current", "step");
-        button.append(el("strong", "", step.title), el("span", "", step.line));
-        button.addEventListener("click", () => go(step.id, "wing"));
-        stepsEl.append(button);
-      });
-    }
-
     function render() {
-      document.body.classList.toggle("cues-off", !state.cues);
       document.body.classList.toggle("frame", state.frame);
       document.querySelector(".phone").classList.toggle("is-cover", state.screen === "cover");
       if (state.screen === "cover") renderCover();
@@ -1296,19 +1233,11 @@
       else if (state.screen === "menu") renderMenu();
       else if (state.screen === "card") renderCard();
       else renderList();
-      renderSteps();
     }
-
-    document.getElementById("hide-cues").addEventListener("click", () => {
-      state.cues = !state.cues;
-      document.getElementById("hide-cues").textContent = state.cues ? "Hide cues" : "Show cues";
-      render();
-    });
-    document.getElementById("restart").addEventListener("click", () => go("cover", "wing"));
 
     const initial = params.get("screen");
     if (["cover", "map", "shop", "menu", "card", "list"].includes(initial)) state.screen = initial;
-    if (!state.cues) document.getElementById("hide-cues").textContent = "Show cues";
+    if (params.get("shop") === "shun") state.shopId = "shun";
     render();
   </script>
 </body>
